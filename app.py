@@ -35,6 +35,7 @@ def new_phasor(index):
         "color": "#1565c0",
         "width": 1.0,
         "arrowstyle": "->",
+        "label_position": "Above line",
     }
 
 
@@ -263,7 +264,7 @@ for index, phasor in enumerate(phasors):
                 else "End"
             )
 
-        style = st.columns([1.2, 1, 1, 1])
+        style = st.columns([1.2, 1, 1.4, 1.2, 0.7])
         phasor["color"] = style[0].color_picker(
             "Color", value=phasor["color"], key=f"color_{key}"
         )
@@ -281,7 +282,15 @@ for index, phasor in enumerate(phasors):
             format_func=lambda arrowstyle: ARROWSTYLE_LABELS[arrowstyle],
             key=arrow_key,
         )
-        if style[3].button("Delete", key=f"delete_{key}", disabled=len(phasors) == 1):
+        phasor["label_position"] = style[3].selectbox(
+            "Name position",
+            ["Above line", "Below line"],
+            index=["Above line", "Below line"].index(
+                phasor.get("label_position", "Above line")
+            ),
+            key=f"label_position_{key}",
+        )
+        if style[4].button("Delete", key=f"delete_{key}", disabled=len(phasors) == 1):
             phasors.pop(index)
             st.rerun()
 
@@ -294,12 +303,6 @@ elif len(set(names)) != len(names):
     st.error("Phasor names must be unique so endpoint references are unambiguous.")
 else:
     points = resolve_points(phasors)
-    label_position = st.radio(
-        "Phasor name position",
-        ["Above line", "Below line"],
-        horizontal=True,
-    )
-    label_offset = 6 if label_position == "Above line" else -6
     fig, ax = plt.subplots(figsize=(8, 8))
     for phasor in phasors:
         start, end = points[phasor["id"]]
@@ -317,6 +320,9 @@ else:
             },
         )
         midpoint = ((start[0] + end[0]) / 2, (start[1] + end[1]) / 2)
+        label_offset = (
+            10 if phasor.get("label_position", "Above line") == "Above line" else -10
+        )
         ax.annotate(
             phasor["name"],
             xy=midpoint,
