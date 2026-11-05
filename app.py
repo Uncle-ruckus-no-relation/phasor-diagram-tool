@@ -310,12 +310,15 @@ else:
                 "shrinkB": 0,
             },
         )
+        midpoint = ((start[0] + end[0]) / 2, (start[1] + end[1]) / 2)
         ax.annotate(
             phasor["name"],
-            xy=end,
-            xytext=(5, 5),
-            textcoords="offset points",
+            xy=midpoint,
             color=phasor["color"],
+            ha="center",
+            va="center",
+            rotation=0,
+            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.75, "pad": 1.5},
         )
 
     coordinates = np.asarray([point for pair in points.values() for point in pair])
