@@ -294,6 +294,12 @@ elif len(set(names)) != len(names):
     st.error("Phasor names must be unique so endpoint references are unambiguous.")
 else:
     points = resolve_points(phasors)
+    label_position = st.radio(
+        "Phasor name position",
+        ["Above line", "Below line"],
+        horizontal=True,
+    )
+    label_offset = 6 if label_position == "Above line" else -6
     fig, ax = plt.subplots(figsize=(8, 8))
     for phasor in phasors:
         start, end = points[phasor["id"]]
@@ -314,11 +320,18 @@ else:
         ax.annotate(
             phasor["name"],
             xy=midpoint,
+            xytext=(0, label_offset),
+            textcoords="offset points",
             color=phasor["color"],
             ha="center",
             va="center",
             rotation=0,
-            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.75, "pad": 1.5},
+            bbox={
+                "facecolor": "white",
+                "edgecolor": "none",
+                "alpha": 0.75,
+                "pad": 1.5,
+            },
         )
 
     coordinates = np.asarray([point for pair in points.values() for point in pair])
